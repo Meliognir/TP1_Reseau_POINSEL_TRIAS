@@ -84,36 +84,131 @@ int exo2() {
 
 typedef struct Node {
     int data;
-    struct Node* ptrNext;
+    struct Node* next;
 } Node;
 
-Node buildList(int n) {
-    Node head = NULL;
-    if (n > 0) {
-        Node newNode;
-        head = newNode;
-        Node memNode = NULL;
-        for (int i=0; i<n;i++) {
-            newNode.data = i;
-            newNode.ptrNext = NULL;
+Node* createNode(int value) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
 
-            memNode.ptrNext = &newNode;
-            memNode = newNode;
-            Node newNode = NULL;
-            printf("Node %i \n",i);
+Node* createList(int n) {
+    Node* head = NULL;
+    Node* temp = NULL;
+    for (int i = 1; i <= n; i++) {
+        Node* newNode = createNode(i);
+        if (head == NULL) {
+            head = newNode;
+        } else {
+            temp->next = newNode;
         }
+        temp = newNode;
     }
     return head;
 }
+
+void displayList(Node* head) {
+    while (head != NULL) {
+        printf("%d => ", head->data);
+        head = head->next;
+    }
+    printf("NULL\n");
+}
+
+int listLength(Node* head) {
+    int length = 0;
+    while (head != NULL) {
+        length++;
+        head = head->next;
+    }
+    return length;
+}
+
+void displayListWithAddress(Node* head) {
+    while (head != NULL) {
+        printf("Adresse du maillon: %p, Valeur du maillon: %d\n", head, head->data);
+        head = head->next;
+    }
+}
+
+Node* removeFirst(Node* head) {
+    if (head == NULL) return NULL;
+    Node* temp = head;
+    head = head->next;
+    free(temp);
+    return head;
+}
+
+Node* removeLast(Node* head) {
+    if (head == NULL || head->next == NULL) {
+        free(head);
+        return NULL;
+    }
+    Node* temp = head;
+    while (temp->next->next != NULL) {
+        temp = temp->next;
+    }
+    free(temp->next);
+    temp->next = NULL;
+    return head;
+}
+
+Node* addLast(Node* head, int value) {
+    Node* newNode = createNode(value);
+    if (head == NULL) {
+        return newNode;
+    }
+    Node* temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+    return head;
+}
+
+Node* addFirst(Node* head, int value) {
+    Node* newNode = createNode(value);
+    newNode->next = head;
+    return newNode;
+}
+
+Node* concatenateLists(Node* list1, Node* list2) {
+    if (list1 == NULL) return list2;
+    Node* temp = list1;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = list2;
+    return list1;
+}
+
+Node* mapList(Node* head, int (*func)(int)) {
+    Node* temp = head;
+    while (temp != NULL) {
+        temp->data = func(temp->data);
+        temp = temp->next;
+    }
+    return head;
+}
+
+int square(int x) {
+    return x * x;
+}
+
 void exo3() {
-    Node* head = buildList(12);
+    printf("Votre liste chaînée est : \n");
+    int n = 8;
+    Node* list = createList(n);
+    displayList(list);
 
 }
 
 int main(void)
 {
-    exo1();
-    exo2();
-    //exo3();
+    //exo1();
+    //exo2();
+    exo3();
     return 0;
 }
