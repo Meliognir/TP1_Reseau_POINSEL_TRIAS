@@ -174,7 +174,7 @@ Node* addFirst(Node* head, int value) {
     return newNode;
 }
 
-Node* concatenateLists(Node* list1, Node* list2) {
+Node* concatenateLists(Node* list1, Node* list2) { // add the elements of list2 at the end of list1
     if (list1 == NULL) return list2;
     Node* temp = list1;
     while (temp->next != NULL) {
@@ -196,6 +196,55 @@ Node* mapList(Node* head, int (*func)(int)) {
 int square(int x) {
     return x * x;
 }
+
+/* Transform the linked list in a doubly linked list */
+
+typedef struct doublyLinkedNode {
+    int data;
+    struct DoublyLinkedNode* prev;
+    struct DoublyLinkedNode* next;
+} DoublyLinkedNode;
+
+DoublyLinkedNode* createDoublyLinkedNode(Node* simpleNode) {
+    DoublyLinkedNode* newNode = (DoublyLinkedNode*)malloc(sizeof(DoublyLinkedNode));
+    newNode->data = simpleNode->data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+DoublyLinkedNode* createDoublyLinkedChain(Node* head) {
+    Node* temp = head;
+    DoublyLinkedNode* doubleHead = createDoublyLinkedNode(head);
+    DoublyLinkedNode* doubleTemp = doubleHead;
+    DoublyLinkedNode* newDoubleNode = NULL;
+    while (temp->next != NULL) {
+        newDoubleNode = createDoublyLinkedNode(temp);
+        newDoubleNode->prev = doubleTemp;
+        doubleTemp->next = newDoubleNode;
+        doubleTemp = newDoubleNode;
+    }
+    return doubleHead;
+}
+
+/* Create a doubly linked cycle list of n elements */
+
+DoublyLinkedNode* createCycle(int n) {
+    DoublyLinkedNode* head = createDoublyLinkedChain(createList(n));
+
+    if (head == NULL || head->next == NULL) {
+        return NULL;
+    }
+
+    DoublyLinkedNode* queue = head;
+    while (queue->next != NULL) {
+        queue = queue->next;
+    }
+    queue->next = head;
+    head->prev = queue;
+    return head;
+}
+
 
 void exo3() {
     printf("Votre liste chaînée est : \n");
