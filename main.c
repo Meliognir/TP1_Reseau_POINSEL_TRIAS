@@ -7,12 +7,13 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
+
+/*---------------------EXERCICE 1----------------------*/
+
 int data=54;
 int BSS;
 
-
 void exo1() {
-    //EXERCICE 1
 
     int *heap=(int*)malloc(sizeof(int));
     int stack=0;
@@ -45,8 +46,9 @@ void exo1() {
 
 }
 
+/*---------------------EXERCICE 2----------------------*/
+
 int exo2() {
-    //EXERCICE 2
     int fd= open("../text.txt",O_RDWR);
     if (fd==-1) {
         perror("Erreur d'ouverture du fichier");
@@ -82,6 +84,10 @@ int exo2() {
     return 0;
 }
 
+/*---------------------EXERCICE 3----------------------*/
+
+/* Creation of a linked list */
+
 typedef struct Node {
     int data;
     struct Node* next;
@@ -109,6 +115,8 @@ Node* createList(int n) {
     return head;
 }
 
+/* Display the elements of the list */
+
 void displayList(Node* head) {
     while (head != NULL) {
         printf("%d => ", head->data);
@@ -116,6 +124,8 @@ void displayList(Node* head) {
     }
     printf("NULL\n");
 }
+
+/* Find the length of the list */
 
 int listLength(Node* head) {
     int length = 0;
@@ -126,12 +136,16 @@ int listLength(Node* head) {
     return length;
 }
 
+/* Display the elements of the list and their address */
+
 void displayListWithAddress(Node* head) {
     while (head != NULL) {
         printf("Adresse du maillon: %p, Valeur du maillon: %d\n", head, head->data);
         head = head->next;
     }
 }
+
+/* Remove the first element of the list */
 
 Node* removeFirst(Node* head) {
     if (head == NULL) return NULL;
@@ -140,6 +154,8 @@ Node* removeFirst(Node* head) {
     free(temp);
     return head;
 }
+
+/* Remove the last element of the list */
 
 Node* removeLast(Node* head) {
     if (head == NULL || head->next == NULL) {
@@ -155,6 +171,8 @@ Node* removeLast(Node* head) {
     return head;
 }
 
+/* Add a new element at the queue of the list */
+
 Node* addLast(Node* head, int value) {
     Node* newNode = createNode(value);
     if (head == NULL) {
@@ -168,11 +186,15 @@ Node* addLast(Node* head, int value) {
     return head;
 }
 
+/* Add a new element at the head of the list */
+
 Node* addFirst(Node* head, int value) {
     Node* newNode = createNode(value);
     newNode->next = head;
     return newNode;
 }
+
+/* Concatenation */
 
 Node* concatenateLists(Node* list1, Node* list2) { // add the elements of list2 at the end of list1
     if (list1 == NULL) return list2;
@@ -183,6 +205,8 @@ Node* concatenateLists(Node* list1, Node* list2) { // add the elements of list2 
     temp->next = list2;
     return list1;
 }
+
+/* Apply a function to every element of the list */
 
 Node* mapList(Node* head, int (*func)(int)) {
     Node* temp = head;
