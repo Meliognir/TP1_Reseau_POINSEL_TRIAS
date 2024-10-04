@@ -49,38 +49,39 @@ void exo1() {
 /*---------------------EXERCICE 2----------------------*/
 
 int exo2() {
-    int fd= open("../text.txt",O_RDWR);
-    if (fd==-1) {
-        perror("Erreur d'ouverture du fichier");
-        return -1;
-    }
 
     struct stat st;
-    long sizeFile=0;
-    if(stat("../text.txt",&st)==0) { //this format worked with Clion
+    int fd= open("../text.txt",O_RDWR); //this format works with Clion
+    if (fd == -1){
+
+        fd = open("text.txt",O_RDWR); //this format works with VSCode
+        if (fd == -1){
+            perror("Erreur d'ouverture du fichier");
+            return -1;
+        }
+        else {
+            stat("text.txt",&st);
+        }
+    }
+    else{
+        stat("../text.txt",&st);
+    }
+
+    if(fd!=-1) {
+        long sizeFile=0;
         sizeFile=st.st_size;
         printf("La taille du fichier est : %ld octets \n",sizeFile);
-    }else {
-        perror("stat");
+        char * mmapText=mmap(NULL,sizeFile,PROT_READ |PROT_WRITE,MAP_SHARED,fd,0);
+        for (size_t i=0;i<sizeFile/2;i++) {
+            char temp=mmapText[i];
+            mmapText[i]=mmapText[sizeFile-i-1];
+            mmapText[sizeFile-i-1]=temp;
+        }
+        //write(STDOUT_FILENO,mmapText,sizeFile);
+        printf("%s \n",mmapText);
+        munmap(mmapText,sizeFile);
+        close(fd);
     }
-   char * mmapText=mmap(NULL,sizeFile,PROT_READ |PROT_WRITE,MAP_SHARED,fd,0);
-    for (size_t i=0;i<sizeFile/2;i++) {
-        char temp=mmapText[i];
-        mmapText[i]=mmapText[sizeFile-i-1];
-        mmapText[sizeFile-i-1]=temp;
-    }
-    //write(STDOUT_FILENO,mmapText,sizeFile);
-    printf("%s \n",mmapText);
-    munmap(mmapText,sizeFile);
-    close(fd);
-
- /* ssize_t bytesRead;
-    char buffer[256];
-    while ((bytesRead=read(fd,buffer,sizeof(buffer)-1))>0) {
-        buffer[bytesRead]='\0';
-        printf("%s",buffer);
-
-    }*/
     return 0;
 }
 
