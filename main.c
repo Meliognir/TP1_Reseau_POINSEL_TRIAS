@@ -57,7 +57,7 @@ int exo2() {
 
     struct stat st;
     long sizeFile=0;
-    if(stat("../text.txt",&st)==0) {
+    if(stat("../text.txt",&st)==0) { //this format worked with Clion
         sizeFile=st.st_size;
         printf("La taille du fichier est : %ld octets \n",sizeFile);
     }else {
@@ -163,10 +163,12 @@ Node* removeLast(Node* head) {
         return NULL;
     }
     Node* temp = head;
-    while (temp->next->next != NULL) {
-        temp = temp->next;
+    Node* lastElement = temp->next;
+    while (lastElement->next != NULL) {
+        temp = lastElement;
+        lastElement = lastElement->next;
     }
-    free(temp->next);
+    free(lastElement);
     temp->next = NULL;
     return head;
 }
@@ -208,6 +210,10 @@ Node* concatenateLists(Node* list1, Node* list2) { // add the elements of list2 
 
 /* Apply a function to every element of the list */
 
+int add3(int x) {
+    return x + 3;
+}
+
 Node* mapList(Node* head, int (*func)(int)) {
     Node* temp = head;
     while (temp != NULL) {
@@ -217,16 +223,12 @@ Node* mapList(Node* head, int (*func)(int)) {
     return head;
 }
 
-int square(int x) {
-    return x * x;
-}
-
 /* Transform the linked list in a doubly linked list */
 
 typedef struct doublyLinkedNode {
     int data;
-    struct DoublyLinkedNode* prev;
-    struct DoublyLinkedNode* next;
+    struct doublyLinkedNode* prev;
+    struct doublyLinkedNode* next;
 } DoublyLinkedNode;
 
 DoublyLinkedNode* createDoublyLinkedNode(Node* simpleNode) {
@@ -243,6 +245,7 @@ DoublyLinkedNode* createDoublyLinkedChain(Node* head) {
     DoublyLinkedNode* doubleTemp = doubleHead;
     DoublyLinkedNode* newDoubleNode = NULL;
     while (temp->next != NULL) {
+        temp = temp->next;
         newDoubleNode = createDoublyLinkedNode(temp);
         newDoubleNode->prev = doubleTemp;
         doubleTemp->next = newDoubleNode;
@@ -251,15 +254,13 @@ DoublyLinkedNode* createDoublyLinkedChain(Node* head) {
     return doubleHead;
 }
 
-/* Create a doubly linked cycle list of n elements */
+/* Create a doubly linked cycle list out of a doubly linked list */
 
-DoublyLinkedNode* createCycle(int n) {
-    DoublyLinkedNode* head = createDoublyLinkedChain(createList(n));
+DoublyLinkedNode* makeItCycle(DoublyLinkedNode* head) {
 
-    if (head == NULL || head->next == NULL) {
+    if (head == NULL) {
         return NULL;
     }
-
     DoublyLinkedNode* queue = head;
     while (queue->next != NULL) {
         queue = queue->next;
@@ -269,19 +270,78 @@ DoublyLinkedNode* createCycle(int n) {
     return head;
 }
 
+/* Create a doubly linked cycle list of n elements */
+
+DoublyLinkedNode* createCycle(int n) {
+    DoublyLinkedNode* head = createDoublyLinkedChain(createList(n));
+    head = makeItCycle(head);
+    return head;
+}
+
+/* Create a function to show an element of a doubly linked list */
+
+void displayDoublyLinkedNode(DoublyLinkedNode* head) {
+    printf("Adresse du maillon: %p, Valeur du maillon: %d\n", head, head->data);
+}
+
 
 void exo3() {
-    printf("Votre liste chaînée est : \n");
-    int n = 8;
-    Node* list = createList(n);
-    displayList(list);
+    printf("\nCreation de la liste a :\n");
+    int sizeList = 8;
+    Node* list_a = createList(sizeList);
+    displayList(list_a);
 
+    printf("\nCreation de la liste b :\n");
+    sizeList = 4;
+    Node* list_b = createList(sizeList);
+    displayList(list_b);
+
+    printf("\nConcatène la liste a et la liste b :\n");
+    list_a = concatenateLists(list_a, list_b);
+    displayList(list_a);
+
+    sizeList = listLength(list_a);
+    printf("\nLa nouvelle taille de la liste a est : %i\n", sizeList);
+
+    printf("\nAfficher les adresses des éléments de la liste :\n");
+    displayListWithAddress(list_a);
+
+    printf("\nSupprimer les premier et dernier éléments de la liste :\n");
+    list_a = removeFirst(list_a);
+    list_a = removeLast(list_a);
+    displayList(list_a);
+
+
+    printf("\nAjouter les éléments 25 en tête de liste et 37 en queue :\n");
+    list_a = addFirst(list_a, 25);
+    list_a = addLast(list_a, 37);
+    displayList(list_a);
+
+    printf("\nAjouter 3 à tous les éléments de la liste :\n");
+    list_a = mapList(list_a, add3);
+    displayList(list_a);
+    
+
+    printf("\nTransformer la liste a en une double liste chaînée cyclique :\n");
+    DoublyLinkedNode* doublyLinkedList_a = createDoublyLinkedChain(list_a);
+    DoublyLinkedNode* cycle = makeItCycle(doublyLinkedList_a);
+    for (int i = 0; i < sizeList + 3; i++){
+        displayDoublyLinkedNode(cycle);
+        cycle = cycle->next;
+    }
+
+    printf("\nCréer une double liste chaînée cyclique de n éléments :\n");
+    DoublyLinkedNode* newCycle = createCycle(sizeList);
+    for (int i = 0; i < sizeList + 3; i++){
+        displayDoublyLinkedNode(newCycle);
+        newCycle = newCycle->next;
+    }
 }
 
 int main(void)
 {
-    //exo1();
-    //exo2();
+    exo1();
+    exo2();
     exo3();
     return 0;
 }
